@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOXHOLE RADIO LAB</title>
+<style>
+:root{--bg:#000;--tx:#e8eef5;--mu:#8a96a6;--bl:#3aa0ff;--gl:rgba(255,255,255,.06);--bd:rgba(120,180,255,.22)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#000 radial-gradient(circle at 50% -10%,#0b1a2e,#000 55%);color:var(--tx);font:16px/1.6 "Segoe UI",system-ui,sans-serif}
+body:before{content:"";position:fixed;inset:0;z-index:-1;opacity:.35;background:linear-gradient(var(--bd) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,var(--bd) 1px,transparent 1px) 0 0/48px 48px;mask-image:linear-gradient(#000,transparent 70%)}
+nav{position:sticky;top:0;z-index:20;display:flex;gap:.3rem 1rem;flex-wrap:wrap;align-items:center;padding:.6rem 1.2rem;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd)}
+nav b{letter-spacing:.14em;margin-right:auto}nav a{color:var(--mu);text-decoration:none;font-size:.9rem}nav a:hover{color:var(--bl)}
+section{max-width:1150px;margin:auto;padding:3.5rem 1.2rem}
+h1{font-size:clamp(2.2rem,7vw,4.6rem);letter-spacing:.12em;margin:0;line-height:1.05}
+h2{font-size:1.9rem;margin:0 0 .4rem;font-weight:600}h3{margin:.2rem 0}
+.mu{color:var(--mu)}.sub{font-size:1.15rem;color:var(--bl);margin:.6rem 0 1rem}
+.card{background:var(--gl);border:1px solid var(--bd);border-radius:12px;padding:1.1rem;backdrop-filter:blur(10px);box-shadow:0 0 24px rgba(58,160,255,.07)}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.hero{display:grid;gap:2rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:center;min-height:80vh}
+button,.btn{font:inherit;color:var(--tx);background:rgba(58,160,255,.12);border:1px solid var(--bl);border-radius:8px;padding:.55rem 1rem;cursor:pointer;text-decoration:none;display:inline-block}
+button:hover,.btn:hover{background:rgba(58,160,255,.3)}button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.btns{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.2rem}
+.eq{font-size:clamp(1.6rem,5vw,2.8rem);text-align:center;padding:1rem;border:1px solid var(--bl);border-radius:12px;margin:1rem 0;font-family:Cambria,Georgia,serif;box-shadow:0 0 30px rgba(58,160,255,.2)}
+svg text{fill:var(--tx);font:13px "Segoe UI",sans-serif}
+.part{cursor:pointer}.part:hover *,.part.on *{stroke:var(--bl)}
+.zone{fill:none;stroke:var(--bl);stroke-dasharray:6 5;opacity:.5}
+label{display:block;font-size:.9rem;margin:.6rem 0 .1rem}input[type=range]{width:100%;accent-color:var(--bl)}
+select{font:inherit;background:#000;color:var(--tx);border:1px solid var(--bd);padding:.4rem;border-radius:6px}
+canvas{width:100%;display:block;background:#02060c;border:1px solid var(--bd);border-radius:8px}
+.read{font-family:Consolas,monospace;color:var(--bl)}
+.note{border-left:3px solid var(--bl);padding:.4rem .8rem;color:var(--mu);font-size:.92rem;margin:.8rem 0}
+.warn{border:1px solid #ff6b6b;background:rgba(255,80,80,.08);border-radius:10px;padding:.8rem;margin:1rem 0}
+details{border-bottom:1px solid var(--bd);padding:.5rem 0}summary{cursor:pointer;font-weight:600}
+#pres{position:fixed;inset:0;z-index:100;background:#000;display:none;flex-direction:column;padding:2vw 5vw;overflow:auto}
+#pres.open{display:flex}#pres h2{font-size:clamp(2rem,5vw,3.6rem)}
+#pres li{font-size:clamp(1.3rem,3vw,2.2rem);margin:.5rem 0}#pres .scr{font-size:1.15rem;color:var(--mu);border-top:1px solid var(--bd);padding-top:.8rem;margin-top:auto}
+.opt{display:block;width:100%;text-align:left;margin:.4rem 0}.opt.ok{border-color:#4ade80;background:rgba(74,222,128,.15)}.opt.no{border-color:#ff6b6b;background:rgba(255,107,107,.15)}
+section{scroll-margin-top:56px}nav a.act{color:#fff;border-bottom:2px solid var(--bl)}
+.det{display:none}body.det-on .det{display:block}
+.flow{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:1.2rem 0}
+.flow .card{position:relative;text-align:center}.flow .card:not(:last-child):after{content:"\2192";position:absolute;right:-.75rem;top:42%;color:var(--bl);font-size:1.3rem}
+.flow b{color:var(--bl)}.big{font-size:1.15rem}
+@media(max-width:700px){.flow .card:after{display:none}nav a{font-size:.8rem}}
+footer{text-align:center;padding:2rem 1rem;color:var(--mu);border-top:1px solid var(--bd)}
+.wv{width:100%;height:60px}.wv path{fill:none;stroke:var(--bl);stroke-width:1.5}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}html{scroll-behavior:auto}}
+@keyframes wave{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(1.6)}}
+.w{transform-origin:70px 60px;animation:wave 3s infinite;fill:none;stroke:var(--bl)}
+</style></head><body>
+<nav><b>FOXHOLE RADIO LAB</b><a href="#overview">Overview</a><a href="#circuit">Circuit</a><a href="#lab">Simulation</a><a href="#learn">Learn</a><a href="#parts">Components</a><a href="#fix">Troubleshooting</a><a href="#quiz">Quiz</a><button id="detbtn" title="Show or hide extra technical notes">Details: off</button><button onclick="openPres()">Present</button></nav>
+
+<section class="hero"><div>
+<h1>FOXHOLE RADIO LAB</h1>
+<p class="sub">From a Razor Blade to Radio Waves — Understanding Passive AM Radio Reception.</p>
+<p class="big">A radio with no battery and no amplifier. Energy from the broadcast itself is selected by a tuned circuit, detected by a crude razor-blade and graphite contact, and heard in a sensitive earphone.</p>
+<div class="btns"><a class="btn" href="#lab">Explore the Simulation</a><a class="btn" href="#circuit">Understand the Circuit</a><button onclick="openPres()">Start Expo Presentation</button></div></div>
+<div class="card"><svg viewBox="0 0 440 300" role="img" aria-label="Homemade crystal radio: antenna, coil, razor blade, pencil graphite, earphone">
+<circle class="w" cx="70" cy="60" r="50"/><circle class="w" cx="70" cy="60" r="50" style="animation-delay:1s"/><circle class="w" cx="70" cy="60" r="50" style="animation-delay:2s"/>
+<g stroke="#fff" fill="none" stroke-width="2"><path d="M70 60V150H110"/><path d="M110 150c0-18 16-18 16 0s16 18 16 0 16-18 16 0 16 18 16 0 16-18 16 0H230"/>
+<path d="M230 150H260M300 150H400V230"/><path d="M60 260H400V250M60 150V260"/></g>
+<polygon points="255,140 300,140 305,160 250,160" fill="#cfd8e3" stroke="#fff"/><path d="M280 100L282 140" stroke="#888" stroke-width="7"/><circle cx="282" cy="140" r="4" fill="var(--bl)"><animate attributeName="opacity" values="1;.2;1" dur="1.2s" repeatCount="indefinite"/></circle>
+<circle cx="400" cy="240" r="18" fill="#111" stroke="#fff" stroke-width="2"/>
+<text x="20" y="35">antenna</text><text x="110" y="135">wire coil</text><text x="250" y="90">pencil graphite</text><text x="232" y="180">razor blade</text><text x="345" y="285">earphone</text></svg></div></section>
+
+<section id="overview"><h2>Project at a glance</h2>
+<p class="mu big">Four stages turn an invisible radio wave into sound.</p>
+<div class="flow"><div class="card"><b>1. Antenna</b><br>Collects the radio wave as a tiny voltage.</div><div class="card"><b>2. Tuned circuit</b><br>Coil + capacitor select one station.</div><div class="card"><b>3. Detector</b><br>Blade + graphite contact recovers the audio envelope.</div><div class="card"><b>4. Earphone</b><br>Turns the weak signal into sound.</div></div>
+<div class="eq">f₀ = 1 / (2π√LC)</div>
+<div class="grid"><div class="card"><h3>Key idea</h3><p>The signal supplies all the energy. Nothing is amplified, so the sound is quiet.</p></div>
+<div class="card"><h3>Honest limits</h3><p>The blade detector is crude and contact-sensitive. The simulations are conceptual, not measurements.</p></div>
+<div class="card"><h3>Suggested 2-minute demo</h3><p><a href="#circuit" style="color:var(--bl)">Click components</a>, then <a href="#lab" style="color:var(--bl)">tune to a station</a>, then change signal and contact quality.</p></div></div></section>
+<section id="circuit"><h2>Interactive radio circuit</h2>
+<p class="mu">Click any component. Dashed boxes separate the tuned circuit, the detector and the audio output.</p>
+<div class="card"><svg id="cs" viewBox="0 0 800 400" style="width:100%;min-width:560px">
+<rect class="zone" x="150" y="85" width="230" height="260" rx="10"/><text x="160" y="105" fill="#3aa0ff" style="fill:#3aa0ff">TUNED CIRCUIT (selects station)</text>
+<rect class="zone" x="400" y="85" width="190" height="260" rx="10"/><text x="410" y="105" style="fill:#3aa0ff">DETECTOR (experimental)</text>
+<rect class="zone" x="620" y="85" width="150" height="260" rx="10"/><text x="630" y="105" style="fill:#3aa0ff">AUDIO OUTPUT</text>
+<g class="part" data-k="7"><path id="top" d="M120 140H640" stroke="#fff" stroke-width="3" fill="none"/><path id="loop" d="M120 140H700V320H120V140" fill="none"/></g>
+<g class="part" data-k="6"><path d="M60 320H700" stroke="#fff" stroke-width="3"/><path d="M60 320V340M40 340H80M48 349H72M56 358H64" stroke="#fff" stroke-width="3"/><text x="90" y="340">Ground / return path</text></g>
+<g class="part" data-k="0"><path d="M120 140V60M120 60L90 30M120 60L150 30M120 60V30" stroke="#fff" stroke-width="3" fill="none"/><text x="30" y="30">Antenna</text></g>
+<g class="part" data-k="1"><path d="M200 140V170c20 0 20 12 0 12s-20 12 0 12 20 12 0 12-20 12 0 12 20 12 0 12-20 12 0 12 20 12 0 12V320" fill="none" stroke="#fff" stroke-width="3"/><text x="215" y="240">Coil (L)</text></g>
+<g class="part" data-k="2"><path d="M320 140V210M320 250V320M295 210H345M295 250H345M290 265L350 195" stroke="#fff" stroke-width="3" fill="none"/><text x="355" y="235">Variable C</text></g>
+<g class="part" data-k="3"><polygon points="430,125 500,125 510,155 420,155" fill="#9fb0c4" stroke="#fff" stroke-width="2"/><text x="425" y="175">Razor blade</text></g>
+<g class="part" data-k="4"><path d="M555 120L545 150" stroke="#777" stroke-width="12"/><path d="M545 150L540 158" stroke="#fff" stroke-width="3"/><circle cx="541" cy="156" r="5" fill="#3aa0ff"/><path d="M510 140H535M560 140H640" stroke="#fff" stroke-width="3"/><text x="520" y="190">Graphite contact</text></g>
+<g class="part" data-k="5"><circle cx="700" cy="230" r="34" fill="#111" stroke="#fff" stroke-width="3"/><path d="M700 140V196M700 264V320" stroke="#fff" stroke-width="3"/><text x="650" y="288">Hi-Z earphone</text></g>
+<g id="parts-dots" fill="#3aa0ff"></g></svg></div>
+<div class="btns"><button id="flowbtn">Pause signal flow</button></div>
+<div class="card" id="info" style="margin-top:1rem"><h3>Select a component</h3></div>
+<div class="note">Simplified conceptual diagram. Real foxhole radios differ in topology (coil taps, series or parallel capacitor, ground arrangement). The razor-blade detector is an experimental metal–semiconductor contact: behavior depends on the materials, surface condition and exact contact point.</div></section>
+
+<section id="lab"><h2>Simulation lab</h2>
+<div class="note"><b>How to use this demo:</b> tune with the slider or station buttons, adjust L and C (or press "Resonate"), then set signal strength and contact quality and watch the scope. Everything here is a <b>conceptual model</b>, not a measurement, and does not guarantee reception.</div>
+<div class="grid">
+<div class="card"><h3>A. Tuning</h3>
+<label>Station frequency (illustrative AM band 530–1700 kHz): <span class="read" id="fsv"></span></label><input id="fs" type="range" min="530" max="1700" value="1000">
+<label>Tuning dial</label><input id="dial" type="range" min="530" max="1700" value="1000" aria-label="Tuning knob">
+<label>Station (illustrative, not real stations)</label><select id="st"><option value="700">Station A – 700 kHz</option><option value="1000" selected>Station B – 1000 kHz</option><option value="1400">Station C – 1400 kHz</option></select>
+<label>Inductance L: <span class="read" id="Lv"></span></label><input id="L" type="range" min="100" max="500" value="250">
+<label>Capacitance C: <span class="read" id="Cv"></span></label><input id="C" type="range" min="20" max="500" value="101">
+<p class="read" id="f0">f₀ = </p><p>Match to station: <span class="read" id="mt"></span></p>
+<div class="btns"><button id="res">Resonate (set C for station)</button></div>
+<p class="mu det" style="font-size:.88rem">f₀ = 1 / (2π√(LC)). Real tuning also depends on coil losses (Q), antenna loading, and parasitic capacitance, which shift f₀.</p></div>
+<div class="card"><h3>C. Signal strength</h3><label>Incoming signal: <span class="read" id="sgv"></span></label><input id="sg" type="range" min="0" max="100" value="70">
+<p class="mu det" style="font-size:.9rem">Strength depends on the transmitter, distance, antenna and environment. Weak signal → small carrier and very faint recovered audio.</p>
+<h3>D. Razor blade + pencil detector</h3>
+<svg viewBox="0 0 300 110" style="width:100%"><polygon points="20,85 280,85 290,105 10,105" fill="#9fb0c4"/><g id="pen"><polygon points="140,10 160,10 152,60 148,60" fill="#555"/><circle id="tip" cx="150" cy="62" r="5" fill="#3aa0ff" opacity=".2"/></g></svg>
+<label>Contact quality: <span class="read" id="cqv"></span></label><input id="cq" type="range" min="0" max="100" value="80">
+<div style="display:flex;justify-content:space-between;font-size:.8rem" class="mu"><span>Poor contact</span><span>Unstable contact</span><span>Better contact</span></div>
+<canvas id="iv" height="150"></canvas><p class="mu">Conceptual sketch, not a measured characteristic.</p><p class="mu det" style="font-size:.88rem">Conceptual I–V sketch of a possible nonlinear contact. Not a measured characteristic. An ordinary blade and pencil do not guarantee reliable rectification.</p></div></div>
+<div class="card" style="margin-top:1rem"><h3>B. Oscilloscope</h3><canvas id="sc" height="440"></canvas>
+<div class="btns"><button id="pz">Pause</button><button id="rs">Reset simulation</button></div>
+<p class="mu">Rows: carrier, AM signal, detector output, final audio. Conceptual model; carrier drawn at a greatly reduced frequency.</p><p class="mu det" style="font-size:.9rem">Rows: (1) RF carrier, (2) AM carrier, (3) detector output with recovered envelope, (4) final audio. The carrier is drawn at a vastly reduced frequency so it is visible; real AM carriers are 530–1700 kHz while audio is ≈ 20 Hz–5 kHz. Model assumption: half-wave detector with asymmetry k, followed by ideal low-pass filtering (mean over a carrier cycle ∝ k).</p></div>
+<div class="card" style="margin-top:1rem"><h3>E. Audio demonstration</h3><button id="tone">Play synthetic 440 Hz tone</button>
+<svg class="wv" viewBox="0 0 400 60" preserveAspectRatio="none"><path id="aw"/></svg>
+<p class="mu">Synthetic demonstration tone, not a received broadcast.</p><p class="mu det" style="font-size:.9rem">Synthetic demonstration tone, <b>not</b> a received broadcast. Loudness follows the model's recovered-audio level. The audio tone (hundreds of Hz) rides as the <i>envelope</i> on a carrier hundreds of thousands of times faster.</p></div></section>
+
+<section id="learn"><h2>Technical learning</h2><p class="mu">Tap a topic to expand.</p>
+<div class="eq">f₀ = 1 / (2π√(LC))</div>
+<p>The tuned circuit selects the radio-frequency signal. The nonlinear detector recovers the modulation envelope. The earphone converts the resulting electrical audio into sound. The detector creates no energy and does not generate the broadcast; the received radio signal supplies all energy, so the audio is usually very weak.</p>
+<div id="lr"></div></section>
+
+<section id="parts"><h2>Component explorer</h2><div class="grid" id="pc"></div>
+<div class="note">A random household earpiece may not work: most modern earphones have low impedance or need powered electronics. Not every blade, pencil or earphone combination will work.</div></section>
+
+<section id="fix"><h2>Troubleshooting</h2>
+<div class="warn"><b>Safety:</b> never connect the antenna, ground wire or radio circuit to a mains socket or electrical wiring. Use only a safe, approved RF/earth reference and consult a lab supervisor for grounding at the exhibition. Keep antenna wires away from power lines.</div>
+<div class="btns" id="sym"></div><div class="card" id="so" style="margin-top:1rem">Choose a symptom.</div></section>
+
+<section id="quiz"><h2>Quiz</h2><div class="card" id="qz"></div></section>
+<footer>Foxhole Radio Lab | Educational Project | Electronics &amp; Communication Engineering<br><button onclick="resetAll()" style="margin-top:.6rem">Reset Simulation</button></footer>
+
+<div id="pres" role="dialog" aria-label="Presentation"><div class="btns" style="margin:0 0 1rem"><button onclick="exitPres()">✕ Exit presentation (Esc)</button><button onclick="slide(-1)">Previous</button><button onclick="slide(1)">Next (→ / Space)</button><span class="mu" id="pn" style="align-self:center"></span></div><div id="ps"></div></div>
+
+<script>
+// ---------- helpers ----------
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+// ---------- component data ----------
+const P=[
+{n:"Antenna wire",f:"Intercepts the radio wave and turns its electric field into a tiny RF voltage.",p:"Radio waves push charges along a conductor; a longer, higher, clear wire intercepts more signal.",b:"Long insulated wire strung outdoors or along a window, kept away from mains wiring.",m:"No antenna: almost no signal. Poor placement or short wire: weak, changing reception.",x:"Loose joints, short or screened by metal, touching other conductors."},
+{n:"Tuning coil (inductor)",f:"Forms the inductance L of the tuned circuit.",p:"Together with capacitance C it resonates at f₀ = 1/(2π√LC), favouring one frequency.",b:"Insulated copper wire wound on a tube or former; turns set L.",m:"No coil: no selectivity, strong stations overlap.",x:"Loose turns, high resistance wire, bad solder, losses lower Q."},
+{n:"Variable capacitor",f:"Changes C to move the resonant frequency across stations.",p:"Overlapping plates; more overlap gives more C and lowers f₀.",b:"Air-spaced tuning capacitor (or fixed capacitor plus tapped coil).",m:"Fixed tuning only; you may never land on a station.",x:"Dirty or bent plates, shorted plates, noisy sliding contact."},
+{n:"Razor blade",f:"One side of the experimental detector contact.",p:"A metal surface (oxide, coating, steel alloy) touching graphite may behave nonlinearly at some points; unreliable.",b:"Steel blade; coating, rust and oxide change behavior.",m:"No detector: the RF cannot be demodulated; earphone stays silent.",x:"Wrong blade, coating, corrosion, dirt, unstable pressure."},
+{n:"Graphite pencil",f:"Other side of the contact; a light movable probe.",p:"Graphite touches the blade at a tiny point; contact resistance and nonlinearity depend on the exact spot and pressure.",b:"Graphite lead, sharpened, held by a light spring or clip.",m:"No probe: no detector contact.",x:"Too heavy or loose pressure, vibration, blunt lead, dirty surface."},
+{n:"High-impedance earphone",f:"Turns the tiny audio current into sound.",p:"A sensitive crystal or high-impedance (kΩ range) transducer gives usable sound from microwatts.",b:"Crystal earpiece or high-impedance magnetic headphone.",m:"No earphone: no output. Low-impedance buds: very faint or silent.",x:"Low impedance modern earbuds, powered devices, broken leads."},
+{n:"Ground / return connection",f:"Provides the reference/return path for the RF current.",p:"The antenna current needs a path back; the ground or counterpoise completes the circuit.",b:"Safe approved earth reference or counterpoise wire; never mains.",m:"Poor return: weak or erratic signal.",x:"Poor contact, using unsafe earth, long resistive lead."},
+{n:"Connecting wires",f:"Link all components with low resistance.",p:"Good joints keep losses low; clean contacts matter because signals are tiny.",b:"Short solid copper wire; soldered or clamped joints.",m:"Open or loose wire: circuit broken.",x:"Intermittent joints, corrosion, long routes adding stray capacitance."}];
+// circuit info + cards
+const info=$("info");
+function show(k){const d=P[k];info.innerHTML=`<h3>${d.n}</h3><p><b>Function:</b> ${d.f}</p><p><b>Working principle:</b> ${d.p}</p><p><b>Construction:</b> ${d.b}</p><p><b>If missing/poorly connected:</b> ${d.m}</p>`;
+ document.querySelectorAll("#cs .part").forEach(g=>g.classList.toggle("on",g.dataset.k==k));}
+document.querySelectorAll("#cs .part").forEach(g=>{g.tabIndex=0;g.onclick=()=>show(g.dataset.k);g.onkeydown=e=>{if(e.key=="Enter")show(g.dataset.k)}});
+$("pc").innerHTML=P.map(d=>`<div class="card"><h3>${d.n}</h3><p><b>Purpose:</b> ${d.f}</p><p><b>Principle:</b> ${d.p}</p><p><b>Failure modes:</b> ${d.x}</p></div>`).join("");
+// signal particles along the loop path (SVG animateMotion)
+(function(){const g=$("parts-dots");for(let i=0;i<8;i++)g.insertAdjacentHTML("beforeend",`<circle r="3.5"><animateMotion dur="6s" begin="${-i*.75}s" repeatCount="indefinite"><mpath href="#loop"/></animateMotion></circle>`)})();
+let flow=true;$("flowbtn").onclick=()=>{const s=$("cs");flow?s.pauseAnimations():s.unpauseAnimations();flow=!flow;$("flowbtn").textContent=flow?"Pause signal flow":"Resume signal flow"};
+// ---------- simulation state ----------
+const S={fs:1000,L:250,C:101,sg:70,cq:80,paused:false,ph:0,jit:0};
+const f0calc=()=>1/(2*Math.PI*Math.sqrt(S.L*1e-6*S.C*1e-12))/1e3; // kHz
+const match=()=>Math.exp(-Math.pow((f0calc()-S.fs)/(S.fs*.04),2)); // simplified resonance curve (assumed Q)
+const kBase=()=>.05+.85*S.cq/100;
+function kNow(){const s=S.cq/100;const unst=s>.33&&s<.66?.25:0;return clamp(kBase()+unst*S.jit,0,1)}
+function ui(){$("fsv").textContent=S.fs+" kHz";$("Lv").textContent=S.L+" µH";$("Cv").textContent=S.C+" pF";
+ $("f0").textContent="f₀ = 1/(2π√LC) = "+f0calc().toFixed(0)+" kHz  (L="+S.L+" µH, C="+S.C+" pF)";
+ $("mt").textContent=(match()*100).toFixed(0)+"% (station "+S.fs+" kHz)";$("sgv").textContent=S.sg+"%";
+ const s=S.cq,t=s<33?"Poor contact":s<66?"Unstable contact":"Better contact";$("cqv").textContent=t;
+ $("pen").style.transform=`translateY(${(100-s)*.02*-1+(s<66?0:2)}px)`;$("tip").setAttribute("opacity",.2+.8*s/100);
+ $("fs").value=S.fs;$("dial").value=S.fs;$("L").value=S.L;$("C").value=S.C;drawIV();}
+function setFs(v){S.fs=+v;const o=[...$("st").options].find(x=>x.value==v);$("st").value=o?v:"700";ui()}
+$("fs").oninput=e=>setFs(e.target.value);$("dial").oninput=e=>setFs(e.target.value);
+$("st").onchange=e=>setFs(e.target.value);
+$("L").oninput=e=>{S.L=+e.target.value;ui()};$("C").oninput=e=>{S.C=+e.target.value;ui()};
+$("sg").oninput=e=>{S.sg=+e.target.value;ui()};$("cq").oninput=e=>{S.cq=+e.target.value;ui()};
+$("res").onclick=()=>{S.C=Math.round(clamp(1/Math.pow(2*Math.PI*S.fs*1e3,2)/(S.L*1e-6)*1e12,20,500));ui()};
+$("pz").onclick=()=>{S.paused=!S.paused;$("pz").textContent=S.paused?"Resume":"Pause"};
+function resetAll(){Object.assign(S,{fs:1000,L:250,C:101,sg:70,cq:80,paused:false,ph:0});$("pz").textContent="Pause";$("st").value=1000;ui()}
+$("rs").onclick=resetAll;
+// conceptual I-V sketch
+function fit(c){const r=devicePixelRatio||1,w=c.clientWidth,h=+c.getAttribute("height");c.width=w*r;c.height=h*r;const x=c.getContext("2d");x.setTransform(r,0,0,r,0,0);return[x,w,h]}
+function drawIV(){const[x,w,h]=fit($("iv"));x.strokeStyle="#445";x.beginPath();x.moveTo(0,h/2);x.lineTo(w,h/2);x.moveTo(w/2,0);x.lineTo(w/2,h);x.stroke();
+ x.strokeStyle="#3aa0ff";x.lineWidth=2;x.beginPath();const k=kBase();for(let i=0;i<=200;i++){const v=(i/200)*2-1,c=.5*v*(1+k*Math.tanh(4*v));const px=w/2+v*w*.45,py=h/2-c*h*.9;i?x.lineTo(px,py):x.moveTo(px,py)}x.stroke();
+ x.fillStyle="#8a96a6";x.font="11px sans-serif";x.fillText("voltage →",w-62,h/2-4);x.fillText("current",w/2+4,12)}
+// ---------- oscilloscope ----------
+const sc=$("sc");
+function scope(){requestAnimationFrame(scope);const[x,w,h]=fit(sc);const rows=4,rh=h/rows;
+ if(!S.paused){S.ph+=.05;S.jit=.7*S.jit+.3*(Math.random()*2-1)}
+ const A=S.sg/100*match(),k=kNow(),m=.8,names=["1  RF carrier (unmodulated)","2  AM carrier (envelope = audio)","3  Detector output + recovered envelope","4  Final audio (DC removed)"];
+ x.font="12px sans-serif";
+ for(let r=0;r<rows;r++){const cy=rh*(r+.5);x.strokeStyle="#12202f";x.lineWidth=1;x.beginPath();x.moveTo(0,cy);x.lineTo(w,cy);x.stroke();x.fillStyle="#8a96a6";x.fillText(names[r],6,rh*r+14);}
+ const amp=rh*.38;
+ const tr=(r,fn,col,lw)=>{x.strokeStyle=col;x.lineWidth=lw;x.beginPath();const cy=rh*(r+.5);for(let i=0;i<=w;i+=1){const t=i/w,y=fn(t);i?x.lineTo(i,cy-y*amp):x.moveTo(i,cy-y*amp)}x.stroke()};
+ const aud=t=>Math.sin(2*Math.PI*3*t-S.ph*.6), car=t=>Math.sin(2*Math.PI*45*t-S.ph*3), env=t=>(1+m*aud(t))/(1+m), am=t=>A*env(t)*car(t);
+ tr(0,t=>A*car(t),"#9fc8ff",1.2);
+ tr(1,am,"#fff",1.2);tr(1,t=>A*env(t),"rgba(58,160,255,.5)",1);
+ tr(2,t=>{const v=am(t);return v>0?v:v*(1-k)},"rgba(255,255,255,.35)",1);tr(2,t=>k*A*env(t)*.9,"#3aa0ff",2.5);
+ tr(3,t=>k*A*m/(1+m)*aud(t)*1.6,"#fff",2);
+ const lvl=k*A;x.fillStyle="#3aa0ff";x.fillText("recovered audio level ≈ "+(lvl*100).toFixed(0)+"% of full scale (model)",w-250,rh*3+14);
+ if(A<.05){x.fillStyle="#ff9b9b";x.fillText("Off-tune or too weak: almost nothing to detect",w/2-130,rh*.5)}
+ // audio waveform preview
+ let d="";for(let i=0;i<=400;i+=4)d+=(i?"L":"M")+i+" "+(30-Math.sin(i/400*2*Math.PI*6)*26*clamp(lvl*2+.05,.05,1));$("aw").setAttribute("d",d);}
+// ---------- audio demo ----------
+let ac;$("tone").onclick=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;o.frequency.value=440;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(clamp(.02+.3*kNow()*S.sg/100*match(),.02,.3),t+.05);g.gain.linearRampToValueAtTime(0,t+1.5);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+1.6)}catch(e){alert("Web Audio is not available in this browser.")}};
+// ---------- learning ----------
+const LR=[["What is a Foxhole Radio?","A very simple passive AM receiver. The name comes from improvised radios built by soldiers from scrap, often with a blade and graphite as a detector. It has an antenna, tuned circuit, detector and earphone, and no power supply."],
+["How AM works","The transmitter varies the amplitude of a high-frequency carrier (530–1700 kHz) so its envelope follows the audio: v(t) = A[1 + m·x(t)]·cos(2πf_c t), with modulation index m ≤ 1."],
+["What radio waves carry","Electromagnetic waves carry energy and, through modulation of the carrier, information. The wave itself is RF; the audio is only in the slow envelope."],
+["Why an antenna receives","The wave's changing electric field drives charges along a conductor, inducing a small RF voltage (microvolts to millivolts). Longer, higher wires usually pick up more."],
+["How an LC circuit selects a frequency","Inductor and capacitor exchange energy. At f₀ = 1/(2π√LC) the circuit gives its strongest response; other frequencies are attenuated. Example: L = 250 µH and C = 101 pF give f₀ ≈ 1.0 MHz."],
+["What resonance means","A driving signal matching the natural frequency of the circuit builds large oscillation. The sharpness is described by Q, set by losses; low Q means poor station separation."],
+["Blade + graphite as crude detector","Some metal–graphite or metal–oxide contacts show asymmetric, nonlinear current–voltage behavior at a suitable point. It is contact-sensitive and not a guaranteed modern diode."],
+["Rectification and envelope detection","A nonlinear contact conducts more in one direction (rectification), so the average current follows the envelope. Capacitance in the circuit and the earphone smooth out the RF, leaving audio."],
+["Why no powered amplifier is needed","The earphone is driven directly by energy collected from the radio wave. No gain is added: power out is less than power in. The result is quiet and works best near strong stations."],
+["Why high impedance earphone","The recovered current is tiny. A high-impedance, sensitive transducer turns small current at higher voltage into sound; low-impedance earbuds draw too much current for the signal."],
+["Why reception can be weak or unreliable","Weak stations, poor antenna or return, coil losses, stray capacitance, off-tune settings and a fickle detector contact all reduce output."],
+["Limitations","Low volume, poor selectivity, fragile contact, sensitivity to placement, and strong local stations can overlap. This site's simulation is conceptual and does not guarantee reception."]];
+$("lr").innerHTML=LR.map((a,i)=>`<details ><summary>${i+1}. ${a[0]}</summary><p>${a[1]}</p></details>`).join("");
+// ---------- troubleshooting ----------
+const T={"No sound":["Open circuit or loose joint; earphone unsuitable (low impedance); no detector contact; far off-tune.","Check each joint, try a known high-impedance earphone, re-seat the pencil on the blade, sweep the tuning slowly."],
+"Very weak sound":["Short antenna, poor return, coil losses, weak station, partial tuning, weak detector contact.","Lengthen/raise antenna safely, tune slowly for peak, test different blade spots, check earphone type."],
+"Reception changes when touching the pencil":["Contact resistance changes with pressure and position; your body also changes stray capacitance.","Use a light fixed clamp, avoid touching during demo, probe slowly to find a stable spot."],
+"Station cannot be tuned":["L and C do not cover the band, large parasitic capacitance, coil shorted turns, antenna loading shifts f₀.","Calculate f₀ for your L and C, adjust turns or capacitor range, check for shorted turns."],
+"Signal disappears when moving the antenna":["Changed pickup, loose antenna joint, antenna touching other conductors or screened by metal.","Secure the joint, keep the wire clear, find a stable position. Keep it far from power lines."]};
+$("sym").innerHTML=Object.keys(T).map(k=>`<button>${k}</button>`).join("");
+$("sym").onclick=e=>{const k=e.target.textContent;if(T[k])$("so").innerHTML=`<h3>${k}</h3><p><b>Likely causes:</b> ${T[k][0]}</p><p><b>Safe checks:</b> ${T[k][1]}</p><p class="mu">Never test with mains wiring or sockets.</p>`};
+// ---------- quiz ----------
+const Q=[["A foxhole radio is passive because:",["It has no powered amplifier","It has no antenna","It uses AC mains","It makes its own signal"],0,"All its energy comes from the received radio wave."],
+["In AM, information is carried in the:",["Carrier frequency","Amplitude envelope","Antenna length","Ground wire"],1,"AM varies carrier amplitude to follow the audio."],
+["f₀ = 1/(2π√LC). Increasing C will:",["Raise f₀","Lower f₀","Not change f₀","Make it zero"],1,"Larger C lowers resonant frequency."],
+["The antenna's job is to:",["Create the broadcast","Amplify with gain","Intercept the wave as a small RF voltage","Rectify the signal"],2,"It converts part of the wave energy into tiny RF voltage."],
+["Rectification in the detector:",["Makes the average current follow the envelope","Adds power","Selects the station","Creates the carrier"],0,"Asymmetric conduction produces an average that follows the envelope."],
+["The blade–graphite contact:",["Always works as a modern diode","Is crude and contact sensitive","Needs a battery","Is the tuning coil"],1,"Behavior depends on materials, surface and contact point."],
+["Why use a high-impedance earphone?",["It is louder with a battery","The signal current is tiny","It lowers f₀","It acts as the antenna"],1,"Low-impedance earbuds are hard to drive from such a weak signal."],
+["Safe grounding means:",["Connecting to mains earth pins","Using any wall socket","Using only an approved RF/earth reference with supervisor guidance","Touching power lines"],2,"Never connect the radio to mains sockets or wiring."]];
+let qi=0,sco=0;
+function q(){const c=$("qz");if(qi>=Q.length){c.innerHTML=`<h3>Final score: ${sco} / ${Q.length}</h3><button onclick="qi=0;sco=0;q()">Restart quiz</button>`;return}
+ const d=Q[qi];c.innerHTML=`<p class="mu">Question ${qi+1} of ${Q.length}</p><h3>${d[0]}</h3>`+d[1].map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")+`<div id="fb"></div>`;
+ c.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;c.querySelectorAll(".opt").forEach((o,j)=>{o.disabled=true;if(j==d[2])o.classList.add("ok")});if(i==d[2])sco++;else b.classList.add("no");
+  $("fb").innerHTML=`<p>${i==d[2]?"Correct. ":"Not quite. "}${d[3]}</p><button onclick="qi++;q()">${qi+1<Q.length?"Next question":"See score"}</button>`})}
+q();
+// ---------- presentation ----------
+const SL=[["Introduction to Foxhole Radio",["Passive AM receiver","No battery, no amplifier","Blade + graphite detector"],"Hello everyone. Our project is a foxhole radio. It receives AM radio using no battery at all. The only energy it uses is what the antenna collects from the radio wave."],
+["Components in our radio",["Antenna and ground/return","Coil and variable capacitor","Razor blade + pencil graphite","High-impedance earphone"],"Here are the parts. The antenna collects the signal, the coil and capacitor pick a station, the blade and pencil work as a crude detector, and the earphone makes sound."],
+["How an AM signal reaches the antenna",["Transmitter sends a modulated carrier","Wave induces a tiny RF voltage","Audio is in the envelope"],"A station sends a high-frequency carrier whose strength follows the audio. When this wave passes our antenna, it pushes charges and creates a very small RF voltage."],
+["How the LC circuit selects the station",["f₀ = 1 / (2π√LC)","Change C to change f₀","Match f₀ to the station"],"The coil and capacitor resonate at one frequency. By turning the capacitor, we move that frequency until it matches the station we want. Other stations are weakened."],
+["Razor-blade / graphite detector",["Contact is nonlinear (crude)","Rectifies the RF","Average follows the envelope → audio"],"The contact between blade and graphite may conduct unevenly in two directions. That rectifies the signal, so the average follows the audio envelope. It is sensitive and not guaranteed to work."],
+["Advantages, limits, conclusion",["Simple and educational","Quiet, delicate, needs good antenna","Shows core radio ideas"],"In conclusion, a foxhole radio is simple and teaches tuning, modulation and detection. It is also weak and unreliable, which is why modern radios use powered amplifiers. Thank you."]];
+let si=0;function render(){const d=SL[si];$("ps").innerHTML=`<h2>${d[0]}</h2><ul>${d[1].map(x=>`<li>${x}</li>`).join("")}</ul><div class="scr"><b>Speaker script:</b> ${d[2]}</div>`;$("pn").textContent=`Slide ${si+1} / ${SL.length}`}
+function openPres(){si=0;render();$("pres").classList.add("open");document.body.style.overflow="hidden"}
+function exitPres(){$("pres").classList.remove("open");document.body.style.overflow=""}
+function slide(n){si=clamp(si+n,0,SL.length-1);render()}
+document.addEventListener("keydown",e=>{if(!$("pres").classList.contains("open"))return;if(e.key=="ArrowRight"||e.key==" "){e.preventDefault();slide(1)}else if(e.key=="ArrowLeft")slide(-1);else if(e.key=="Escape")exitPres()});
+addEventListener("resize",drawIV);
+$("detbtn").onclick=()=>{const o=document.body.classList.toggle("det-on");$("detbtn").textContent="Details: "+(o?"on":"off")};
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("act",a.getAttribute("href")=="#"+e.target.id))}),{rootMargin:"-45% 0px -50% 0px"});
+document.querySelectorAll("section[id]").forEach(x=>spy.observe(x));
+show(0);ui();scope();
+</script></body></html>
